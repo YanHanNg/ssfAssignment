@@ -18,3 +18,7 @@
 a:hover {
     cursor: pointer;
 }
+
+.uppercase {
+    text-transform: uppercase;
+}

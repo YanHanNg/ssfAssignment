@@ -2,6 +2,7 @@
     <h1>Letter {{startWith}}</h1>
     <a href="/"><button class="btn-home"><i class="fa fa-home"></i> Home</button></a>
 </div>
+{{#if hasResults}}
 {{#each book}}
 <div class="row">
     <div class="col">
@@ -16,7 +17,10 @@
     </form>
     <form action="/getBook/{{startWith}}" method="get">
         <input type="hidden" name="offset" value={{nextOffset}}>
-        <button type="submit" class="btn btn-success" {{#if gotNext}} {{else}} disabled {{/if}}>Next</button>
+        <button type="submit" class="btn btn-success" {{#if hasNext}} {{else}} disabled {{/if}}>Next</button>
     </form>       
 </div> 
+{{else}}
+    <h2>There is no Results for Books with Letter/Number starting with {{startWith}}</h2>
+{{/if}}
  

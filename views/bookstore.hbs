@@ -1,17 +1,19 @@
-<h1>My Bookstore</h1>
+<div class="text-center mt-2">
+    <h1>My <i class="fa fa-bold" style="font-size:36px;"></i>ookstore</h1>
+</div>
 <div class="album py-5 bg-light">
     <div class="container">
         <div class="row">
             {{#each bookLetters}}
             <div class="col-md-2">
-                <a href="/getBook/{{this}}" class="btn btn-secondary my-2 btn-width">{{this}}</a>
+                <a href="/getBook/{{this}}" class="btn btn-success my-2 btn-width">{{this}}</a>
             </div>
             {{/each}}
         </div>
         <div class="row">
             {{#each bookNumbers}}
             <div class="col-md-2">
-                <a href="/getBook/{{this}}" class="btn btn-secondary my-2 btn-width">{{this}}</a>
+                <a href="/getBook/{{this}}" class="btn btn-info my-2 btn-width">{{this}}</a>
             </div>
             {{/each}}
         </div>

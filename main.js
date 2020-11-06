@@ -4,6 +4,7 @@ const hbs = require('express-handlebars');
 const fetch = require('node-fetch');
 const withQuery = require('with-query').default;
 const mysql = require('mysql2/promise');
+const morgan = require('morgan');
 
 // Configure PORT
 const PORT = parseInt(process.argv[2]) || parseInt(process.env.PORT) || 3000;
@@ -34,6 +35,9 @@ const NY_TIMES_BOOK_REVIEW_BASEURL = 'https://api.nytimes.com/svc/books/v3/revie
 const bookLetters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N'
 , 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
 const bookNumbers = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
+
+// Use Morgan to Log all Http
+app.use(morgan('combined'));
 
 // Configure Application using Express
 // Get Method
@@ -68,17 +72,18 @@ app.get('/getBook/:startWith', (req, res) => {
             const conn = results[0];
             const queryResults = results[1][0];
             const queryCountResults = results[2][0];
-            let gotNext = (offset + limit) > parseInt(queryCountResults[0].total_book_count) ? false : true;
+            let hasNext = (offset + limit) >= parseInt(queryCountResults[0].total_book_count) ? false : true;
 
             res.status(200);
             res.type('text/html');
             res.render('booktitle', {
                 startWith,
                 book: queryResults,
+                hasResults: queryResults.length, 
                 offset,
                 prevOffset: Math.max(0, offset - limit),
                 nextOffset: offset + limit,
-                gotNext
+                hasNext
             })
 
             conn.release();
@@ -99,16 +104,46 @@ app.get('/getBookDetail/:bookId', (req, res) => {
             const conn = results[0];
             const queryResults = results[1][0];
             
-            let bookDetails = queryResults.map(d => {
+            queryResults.map(d => {
                 d.genres = d.genres.replaceAll('|', ", ");
                 d.authors = d.authors.replaceAll('|', ", ");
             })
 
             res.status(200);
-            res.type('text/html');
-            res.render('bookdetail', {
-                bookDetails: queryResults[0]
-            })
+            // res.type('text/html');
+            // res.render('bookdetail', {
+            //     bookDetails: queryResults[0]
+            // })
+            res.format(
+                {
+                    'text/html': () => {
+                        res.render('bookdetail', {
+                            bookDetails: queryResults[0]
+                        })
+                    },
+                    'application/json': () => {
+                        res.json({
+                            bookId: queryResults[0].book_id,
+                            title: queryResults[0].title,
+                            authors: [
+                                queryResults[0].authors.split(',')
+                            ],
+                            summary: queryResults[0].summary,
+                            pages: queryResults[0].pages,
+                            rating: queryResults[0].rating,
+                            ratingCount: queryResults[0].rating_count,
+                            genre: [
+                                queryResults[0].genres.split(',')
+                            ]
+                        })
+                    },
+                    'default': () => {
+                        res.status(406)
+                        res.type('text/plain')
+                        res.send(`Not supported: ${req.get("Accept")}`)
+                    }
+                }
+            )
 
             conn.release();
         })      
@@ -135,7 +170,7 @@ app.get('/getBookReview/:title/:author', (req, res) => {
             {
                 res.status(404);
                 res.type('text/html');
-                res.send(`<h1>No Book Review Found for Title: ${title} and Author: ${author}`);
+                res.send(`<h1>No Book Review Found for Title: ${title} and Author: ${authors}`);
             }
             else
             {
@@ -154,6 +189,13 @@ app.get('/getBookReview/:title/:author', (req, res) => {
 })
 
 app.use(express.static(__dirname + '/public'));
+
+// Configure Application to Send File or Redirect if does not get Processed by any middleware above
+app.use( (req, res) => {
+    res.status(404);
+    res.type('text/html');
+    res.sendFile(__dirname + '/public/404.html');
+})
 
 // Start Server/Express
 app.listen(PORT, ()=> {

@@ -174,6 +174,7 @@ app.get('/getBookReview/:title/:author', (req, res) => {
             }
             else
             {
+                console.info(results.results);
                 res.status(200);
                 res.type('text/html');
                 res.render('bookreview', {

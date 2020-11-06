@@ -114,6 +114,9 @@ app.get('/getBook/:startWith', (req, res) => {
 
             conn.release();
         })
+        .catch(err => {
+            console.error('Error Occured During Query', err);
+        })
 })
 
 app.get('/getBookDetail/:bookId', (req, res) => {
@@ -172,6 +175,9 @@ app.get('/getBookDetail/:bookId', (req, res) => {
             )
 
             conn.release();
+        })
+        .catch(err => {
+            console.error('Error Occurred during Query', err);
         })      
 })
 
@@ -209,7 +215,7 @@ app.get('/getBookReview/:title/:author', (req, res) => {
             }
         })
         .catch(err => {
-            console.info('Error Occured', err);
+            console.error('Error Occured', err);
         })
     
 })

@@ -28,6 +28,32 @@ const pool = mysql.createPool({
     timezone: process.env.DB_TIMEZONE || '+08:00'
 })
 
+// Start Application with DB Checking Using Promises
+const startApp = (app, pool) => {
+
+    pool.getConnection()
+        .then(conn => {
+            const param1 = Promise.resolve(conn);
+            const param2 = conn.ping();
+            return Promise.all([ param1, param2 ]);
+        })
+        .then(results => {
+            const conn = results[0];
+
+            //Start Server
+            // Start Server/Express
+            app.listen(PORT, ()=> {
+                console.info(`Server Started on PORT ${PORT} at ${new Date()}`);
+            })
+
+            //Release Conn
+            conn.release();
+        })
+        .catch(err => {
+            console.error('Cannot Ping Database', err);
+        })
+}
+
 //Configure API_KEY
 const NY_TIMES_API_KEY = process.env.API_KEY || '';
 const NY_TIMES_BOOK_REVIEW_BASEURL = 'https://api.nytimes.com/svc/books/v3/reviews.json';
@@ -174,7 +200,6 @@ app.get('/getBookReview/:title/:author', (req, res) => {
             }
             else
             {
-                console.info(results.results);
                 res.status(200);
                 res.type('text/html');
                 res.render('bookreview', {
@@ -198,7 +223,4 @@ app.use( (req, res) => {
     res.sendFile(__dirname + '/public/404.html');
 })
 
-// Start Server/Express
-app.listen(PORT, ()=> {
-    console.info(`Server Started on PORT ${PORT} at ${new Date()}`);
-})
+startApp(app, pool);

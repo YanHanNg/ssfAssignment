@@ -1,0 +1,33 @@
+{{#each bookReviews}}
+<div class="row">
+    <div class="col">
+        <h1>{{this.book_title}}</h1>
+    </div>
+</div>
+<div class="row">
+    <div class="col">
+        <p class="m-0">by <span class="italic">{{ this.book_author }}</span></p>
+    </div>
+</div>
+<div class="row">
+    <div class="col">
+        <p class="m-0">Reviewer: <span class="italic">{{ this.byline }}</span></p>
+    </div>
+</div>
+<div class="row">
+    <div class="col">
+        <p class="m-0">Date: <span class="italic">{{ this.publication_dt }}</span></p>
+    </div>
+</div>
+<div class="row">
+    <div class="col">
+        <p class="m-0">{{ this.summary }}</p>
+    </div>
+</div>
+<hr>
+{{/each}}
+<footer>
+    <div class="footer-copyright py-3">
+        <p class="italic">{{copyright}}</p>
+    </div>
+</footer>

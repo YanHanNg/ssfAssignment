@@ -1,0 +1,25 @@
+<div class="row">
+	<div class="col-4 d-flex flex-column">
+		<img class="img-fluid img-thumbnail rounded" src="{{ bookDetails.image_url }}">
+        <p class="m-0">Pages: <span class="font-weight-bold">{{ bookDetails.pages }}</span></p>
+        <p class="m-0">Rating: <span class="font-weight-bold">{{ bookDetails.rating }} ({{ bookDetails.rating_count }}) </span></p>
+        <p class="m-0">Generes: </p>
+        <p class="m-0"><span class="font-weight-bold">{{bookDetails.genres}}</span></p>
+	</div>
+	<div class="col-8">
+        <div class="row">
+            <div class="d-flex justify-content-between">
+                <div class="col-10"><h3>{{ bookDetails.title }}</h3></div>
+                <a href="/"><button class="btn-home"><i class="fa fa-home"></i> Home</button></a>
+            </div>
+        </div>
+        <p>by <span class="italic">{{ bookDetails.authors }}</span></p>
+		<p>
+			{{ bookDetails.description }}
+		</p>
+        <a class="btn btn-sm btn-warning" href="/getBookReview/{{bookDetails.title}}/{{bookDetails.authors}}">
+            <i class="fas fa-home mr-1"></i>
+            Find Review
+        </a>
+	</div>
+</div>
